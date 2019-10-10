@@ -30,8 +30,8 @@ public class Graph2Neo4j {
     }
     public static void main(String[] args) {
         System.out.println("开始解析！");
-        String Version="0.9.22";
-        String SVersion="s0.9.22";
+        String Version="test";
+        String SVersion="stest";
         String SourceCat="../CodeGraph/Project/Sourcedata/"+Version+"/";
         String SaveCat="../CodeGraph/Project/SaveData/"+SVersion+"/";
         File dir=new File(SourceCat);
@@ -51,6 +51,14 @@ public class Graph2Neo4j {
         List<MethodDeclaration> methodDeclarations=new ArrayList<>();
         methodDeclarations=ast2Graph.getMethodDeclarations();
         //写入当前文件的头文件信息
+        /**
+         methodDeclation包含当前文件中所有的函数包括如下：解决函数重名问题
+         1、常规文件类中的函数
+         2、内部类中的函数
+         3、构造函数
+         4、重载函数处理
+         */
+
          new Graph2Neo4j().FileHeader(pfile,methodDeclarations,SaveCat);
 
         for(MethodDeclaration pmethodDeclaration:methodDeclarations){
@@ -64,14 +72,13 @@ public class Graph2Neo4j {
                 List<MethodCallExpr> methodCallExpr=statement.findAll(MethodCallExpr.class);
                 HashMap<MethodCallExpr,String> methodCallExprNames=new HashMap<>();
                 methodCallExpr.forEach(m ->methodCallExprNames.put(m,m.getNameAsString()));
-
                 if(ast2Graph.getCompilationUnit().findAll(MethodDeclaration.class).stream().filter(m->methodCallExprNames.containsValue(m.getNameAsString())).collect(Collectors.toList()).size()==0){continue;}
                 List<MethodDeclaration> method=ast2Graph.getCompilationUnit().findAll(MethodDeclaration.class)
                         .stream().filter(m->methodCallExprNames.containsValue(m.getNameAsString())).collect(Collectors.toList());
                 method.forEach(methodDeclaration -> methodCalled.get(pfile.getName()).add(methodDeclaration.getNameAsString()));
-                //methodCalled存储的是本函数中调用的函数名字
+                //methodCalled存储的是《文件名，文件名中包含的函数名》，方便确定查找结点间的调用关系。
             }
-            PreocessingCallmethod(ast2Graph,pmethodDeclaration,pfile,methodCalled,SaveCat);
+            PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,methodCalled,SaveCat);
         }
 
     }
@@ -138,7 +145,7 @@ public class Graph2Neo4j {
                  OtherfileCalledMethod.keySet().forEach(file->CalledMethod.put(file,OtherfileCalledMethod.get(file)));
 
              }
-             PreocessingCallmethod(ast2Graph,pmethodDeclaration,pfile,CalledMethod,SaveCat);
+             PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,CalledMethod,SaveCat);
 
 
 
@@ -146,7 +153,7 @@ public class Graph2Neo4j {
      }
  }
 
-   public static void PreocessingCallmethod(AST2Graph ast2Graph,MethodDeclaration pmethodDeclaration,File pfile,Map<String,List<String>>methodCalled,String Savecat){
+   public static void PreocessingMethod(AST2Graph ast2Graph,MethodDeclaration pmethodDeclaration,File pfile,Map<String,List<String>>methodCalled,String Savecat){
 
         String fileName=pfile.getName();
         String[] pathArray=pfile.getPath().split("\\\\");

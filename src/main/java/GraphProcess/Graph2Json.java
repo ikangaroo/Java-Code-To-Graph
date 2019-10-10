@@ -43,45 +43,21 @@ public class Graph2Json {
     @Expose
     @SerializedName(value = "succs")
     private List<List<Integer>> mSuccessors = new ArrayList<>();
-    @Expose(serialize = false,deserialize = false)
-    //@SerializedName(value = "featureString")//字符串特征
-    private List<String> mFeatures = new ArrayList<>();
     @Expose
-    @SerializedName(value = "Attribute")
-    private List<ParseExpression> attribute=new ArrayList<>();
-   // @Expose
-   // @SerializedName(value = "featureDims")
+    @SerializedName(value = "featureString")//字符串特征
+    private List<String> mFeatures = new ArrayList<>();
+    //@Expose
+    //@SerializedName(value = "Attribute")
+    //private List<ParseExpression> attribute=new ArrayList<>();
+   @Expose(serialize = false,deserialize = false)
+   @SerializedName(value = "featureDims")
     private List<List<Integer>> mFeatureDims = new ArrayList<>();//方法调用矩阵
     private StringBuilder mStringBuilder = new StringBuilder();
     private VecGenerator mVecGenerator;
     Map<String,List<String>> MethodNameList=new HashMap<>();
     private MethodDeclaration methodDeclaration;
 
-    //=======================================序列化的内部类实现======================================
-    public static class innerClass{
-        @Expose
-        @SerializedName(value = "NodeClass")
-         public String NodeClass="";
-        @Expose
-        @SerializedName(value = "VariableCLASS")
-        String VariableCLASS="";//变量类型
-        @Expose
-        @SerializedName(value = "InitVariableValue")
-        List<String> InitVariableValue=new ArrayList<>();//变量的初始值
-        @Expose
-        @SerializedName(value = "VariableName")
-        List<String> VariableName=new ArrayList<>();//变量名称
-        @Expose
-        @SerializedName(value = "OPerator")
-        List<String> OPerator=new ArrayList<>();//运算符
-        @Expose
-        @SerializedName(value = "Expression")
-        String Expression;
 
-
-
-    }
-    //===============================================================================================
     public Graph2Json() {//无参构造方法
     }
     public Graph2Json(File pfile,String version, String methodName, Map<String,List<String>> methodNameList,MethodDeclaration methodDeclaration){
@@ -175,9 +151,12 @@ public class Graph2Json {
         }
         mNodeNumber=nodeIndex;
         //第一特征
-        for (Object node : mNetwork.nodes()) {//针对每一个节点进行构图
-                                              //添加节点间得关系
-            mSuccessors.add(                  //第二个特征
+        for (Object node : mNetwork.nodes()) {
+            //针对每一个节点进行构图
+            //添加节点间得关系
+            //第二个特征
+
+            mSuccessors.add(
                     (List<Integer>) mNetwork.adjacentNodes(node).stream()
                             .map(o -> nodeMap.get(o))
                             .filter(Objects::nonNull)
@@ -251,8 +230,6 @@ public class Graph2Json {
 //
 //            }
 //        }
-
-        //==========================================================================================
      //========================================================================================
         mNodeNumber = nodeIndex;
         for (Object node : mNetwork.nodes()) {   //针对每一个节点进行构图
@@ -270,22 +247,8 @@ public class Graph2Json {
 //                    temp.forEach(integer -> integers.add(integer));
                     //===============================================================================
                     mSuccessors.add(temp);
-                    //String jstr=Utils.addAttributes(node).replace("{","[").replace("}","]");
-                    //mFeatures.add(jstr);//CFG每个节点添加属性
-                    ParseExpression parseExpression=new ParseExpression(Utils.Object2Node(node));
-//                    innerClass myinnerClass=new innerClass();
-//                    myinnerClass.InitVariableValue=parseExpression.getInitVariableValue();
-//                    myinnerClass.NodeClass=parseExpression.getNodeClass();
-//                    myinnerClass.OPerator=parseExpression.getOPerator();
-//                    myinnerClass.VariableName=parseExpression.getVariableName();
-//                    myinnerClass.VariableCLASS=parseExpression.getVariableCLASS();
-//                    myinnerClass.Expression=parseExpression.getExpressions();
-                    attribute.add(parseExpression);
-
-
-
-
-                    //addFeature(node);//图网络添加后两维的特征
+                    //ParseExpression parseExpression=new ParseExpression(Utils.Object2Node(node));
+                    addFeature(node);//图网络添加后两维的特征
 
         }
     }
