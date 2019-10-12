@@ -1,7 +1,10 @@
 package GraphProcess;
 
 import Neo4j.ExtractJavafile;
+import Neo4j.FunctionClass;
+import Neo4j.Utils;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -52,16 +55,17 @@ public class Graph2Neo4j {
         methodDeclarations=ast2Graph.getMethodDeclarations();
         //写入当前文件的头文件信息
         /**
-         methodDeclation包含当前文件中所有的函数包括如下：解决函数重名问题
+         0、methodDeclation包含当前文件中所有的函数包括如下：解决函数重名问题
          1、常规文件类中的函数
          2、内部类中的函数
          3、构造函数
          4、重载函数处理
          */
-
+        //头文件处理
          new Graph2Neo4j().FileHeader(pfile,methodDeclarations,SaveCat);
 
         for(MethodDeclaration pmethodDeclaration:methodDeclarations){
+            //判断函数申明是在内部类中，还是外部类当中，针对不同的类型，进行处理
             Map<String,List<String>> methodCalled=new HashMap<>();//存储文件-》对应的调用的函数
             methodCalled.put(pfile.getName(),new ArrayList<>());//本文件，只有一个文件
             String pMethodName=pmethodDeclaration.getNameAsString();
@@ -84,15 +88,11 @@ public class Graph2Neo4j {
     }
 
  public static void ProcessMultiFile(File[] fileList,String SaveCat) {
-      Map<String,List<String>> fileMethodDeclarationMap=new HashMap<>();
+        Map<String, List<String>> CalledMethod = new HashMap<>();
+       List<HashMap<File, HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>>>> fileMethodDeclarationMap=new ArrayList<>();
       Map<File,AST2Graph> fileAst2GraphMap=new HashMap<>();
-     Arrays.stream(fileList).forEach(file -> fileAst2GraphMap.put(file,AST2Graph.newInstance(file.getPath())));
-     for(File file:fileList){
-         List<String> methodName=new ArrayList<>();
-         fileAst2GraphMap.get(file).getMethodDeclarations().stream().forEach(m->methodName.add(m.getNameAsString()));
-         fileMethodDeclarationMap.put(file.getName(),methodName);
-     }
-
+      Arrays.stream(fileList).forEach(file -> fileAst2GraphMap.put(file,AST2Graph.newInstance(file.getPath())));
+      fileMethodDeclarationMap=Utils.getfileMethodDeclarationMap(fileList);
      for (File pfile : fileList) {//确定是.java文件
          AST2Graph ast2Graph = AST2Graph.newInstance(pfile.getPath());
          List<MethodDeclaration> methodDeclarations = new ArrayList<>();
@@ -100,54 +100,23 @@ public class Graph2Neo4j {
 
          //写入当前文件的头文件信息
          new Graph2Neo4j().FileHeader(pfile,methodDeclarations,SaveCat);
-
+         //外部类、内部类函数判断
+         FunctionClass functionClass=new FunctionClass(pfile);
+         functionClass.PareMethod();
+         HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>> outclassMethods=functionClass.getOutclassMethods();
+         HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>>innerclassMethods=functionClass.getInnerclassMethods();
+          List<ClassOrInterfaceDeclaration> innerclass=functionClass.getInnerclass();
          for (MethodDeclaration pmethodDeclaration : methodDeclarations) {
-               Map<String,List<String>> CalledMethod=new HashMap<>();
-               List<ClassOrInterfaceType> classOrInterfaceTypeList=pmethodDeclaration.findAll(ClassOrInterfaceType.class);
-               List<MethodCallExpr>methodCallExprList=pmethodDeclaration.findAll(MethodCallExpr.class);
-             //先得到本函数中所有的方法调用，然后得到所有的类或者接口类型，然后过滤到接口
-             // 然后在当前目录下遍历找是不是有接口的名字，或者类的名字，如果存在，则在本类中找具体的方法
-              classOrInterfaceTypeList=classOrInterfaceTypeList.stream().filter(classOrInterfaceType ->fileMethodDeclarationMap.keySet().contains(classOrInterfaceType.getNameAsString()+".java")).collect(Collectors.toList());
-              //依次遍历方法调用（调用的顺序依次为，本文件下，类接口文件、（如果类接口文件为空）全部文件）
-             List<String>InfileCalledMethod=new ArrayList<>();
-             Map<String,List<String>>OtherfileCalledMethod=new HashMap<>();
-             List<String>AllfileCalledMethod=new ArrayList<>();
-             for (MethodCallExpr methodCallExpr:methodCallExprList){
-                 if(fileMethodDeclarationMap.get(pfile.getName()).contains(methodCallExpr.getNameAsString())){
-                     //本文件查找
-                     InfileCalledMethod.add(methodCallExpr.getNameAsString());
-                 }
-                 else if(classOrInterfaceTypeList.size()!=0){
-                     //存在接口或者类文件列表
-                     for(ClassOrInterfaceType classOrInterfaceType:classOrInterfaceTypeList){
-                         if(fileMethodDeclarationMap.get(classOrInterfaceType.getNameAsString()+".java").contains(methodCallExpr.getNameAsString())){
-                             if(OtherfileCalledMethod.containsKey(classOrInterfaceType.getNameAsString()+".java")){
-                                 OtherfileCalledMethod.get(classOrInterfaceType.getNameAsString()+".java").add(methodCallExpr.getNameAsString());
-                             }
-                             else {
-                                 OtherfileCalledMethod.put(classOrInterfaceType.getNameAsString()+".java",new ArrayList<String>());
-                                 OtherfileCalledMethod.get(classOrInterfaceType.getNameAsString()+".java").add(methodCallExpr.getNameAsString());
-                             }
-                         }
-                         else {
-                             System.out.println(pmethodDeclaration.getNameAsString()+"函数中找不到方法调用");
-                         }
-                     }
-                 }
-                 else {
-                     System.out.println(methodCallExpr.getNameAsString()+"：这是个系统库函数，不需要进行构建");
-                 }
-             }
-             if (InfileCalledMethod.size()!=0){
-                 CalledMethod.put(pfile.getName(),InfileCalledMethod);
-             }
-             else if(OtherfileCalledMethod.size()!=0){
-                 OtherfileCalledMethod.keySet().forEach(file->CalledMethod.put(file,OtherfileCalledMethod.get(file)));
+            if(Utils.containMethod(pmethodDeclaration,outclassMethods,innerclassMethods)){
+                //目前只处理外部类和内部类中的函数
+                CalledMethod=Utils.getcallMethods(pfile,pmethodDeclaration,fileMethodDeclarationMap);
+                PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,CalledMethod,SaveCat);
 
-             }
-             PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,CalledMethod,SaveCat);
+            }
+            else {
+                //代码中实例化的函数
 
-
+            }
 
          }
      }

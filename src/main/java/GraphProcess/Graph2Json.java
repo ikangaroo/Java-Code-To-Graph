@@ -14,6 +14,8 @@ import com.github.javaparser.ast.type.*;
 import com.google.common.graph.MutableNetwork;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import owaspbench.VecGenerator;
@@ -27,24 +29,38 @@ public class Graph2Json {
     private MutableNetwork mNetwork;
     @Expose
     @SerializedName(value = "fileName")
+    @Setter
+    @Getter
     private String fileName;
     @Expose
     @SerializedName(value = "Version")
+    @Setter
+    @Getter
     String Version;
     @Expose
     @SerializedName(value = "MethodName")
+    @Setter
+    @Getter
     private String MethodName;
     @Expose
     @SerializedName(value = "callMethodNameReferTo")
+    @Setter
+    @Getter
     private HashMap<Integer,Map<String,String>>callMethodNameReferTo=new HashMap<>();//<节点ID，<访问的函数,函数所在的文件>>
     @Expose
     @SerializedName(value = "n_num")
+    @Setter
+    @Getter
     private int mNodeNumber;
     @Expose
     @SerializedName(value = "succs")
+    @Setter
+    @Getter
     private List<List<Integer>> mSuccessors = new ArrayList<>();
     @Expose
     @SerializedName(value = "featureString")//字符串特征
+    @Setter
+    @Getter
     private List<String> mFeatures = new ArrayList<>();
     //@Expose
     //@SerializedName(value = "Attribute")
@@ -55,6 +71,8 @@ public class Graph2Json {
     private StringBuilder mStringBuilder = new StringBuilder();
     private VecGenerator mVecGenerator;
     Map<String,List<String>> MethodNameList=new HashMap<>();
+    @Getter
+    @Setter
     private MethodDeclaration methodDeclaration;
 
 

@@ -3,6 +3,10 @@ package Neo4j;
 import GraphProcess.AST2Graph;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +18,8 @@ public class FunctionClass {
      * 1、构造函数
      * 2、内部类函数
      * 3、常规类中的函数
-     * 4、方法重载
-     *
+     * 4、方法重载（方法参数的长度、方法参数的类型）
+
      * 可以将这些类别分成2大类：
      * 1、内部类函数
      * 2、外部类函数
@@ -27,10 +31,16 @@ public class FunctionClass {
     //只存在一个外部类
     private ClassOrInterfaceDeclaration outclass;
     //可能存在多个内部类
+    @Getter
+    @Setter
     private List<ClassOrInterfaceDeclaration> innerclass=new ArrayList<>();
     //<外部类，外部类中所有的方法声明>
+    @Getter
+    @Setter
     private HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>> outclassMethods=new HashMap<>();
     //<内部类，内部类中所有的方法声明>
+    @Getter
+    @Setter
     private HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>>innerclassMethods=new HashMap<>();
     //针对文件进行处理
     public FunctionClass(File pfile){
@@ -77,6 +87,7 @@ public class FunctionClass {
 
 
     }
+
 
     public static void main(String[] args) {
         String src="H:\\CodeGraph\\Project\\Sourcedata\\test\\GsonCompatibilityMode.java";
