@@ -36,7 +36,7 @@ public class Graph2Json {
     @SerializedName(value = "Version")
     @Setter
     @Getter
-    String Version;
+    private String Version;
     @Expose
     @SerializedName(value = "MethodName")
     @Setter
@@ -95,15 +95,13 @@ public class Graph2Json {
         Graph2Json graph2Json = new Graph2Json();
         graph2Json.mNetwork = mutableNetwork;
         graph2Json.mVecGenerator = new VecGenerator(mutableNetwork);
-        graph2Json.initSuccessors1();
+        graph2Json.initSuccessors();
 //        graph2Json.saveToJson();
         return graph2Json;
     }
     public static Graph2Json newInstanceForNeo4j(MutableNetwork mutableNetwork,File pfile,String version,String methodName,Map<String,List<String>> callMethodName,MethodDeclaration methodDeclaration){
         Graph2Json graph2Json = new Graph2Json(pfile,version,methodName,callMethodName,methodDeclaration);
         graph2Json.mNetwork = mutableNetwork;
-        graph2Json.mVecGenerator = new VecGenerator(mutableNetwork);
-        graph2Json.initSuccessors1();
         return graph2Json;
 
     }
@@ -117,7 +115,7 @@ public class Graph2Json {
         Util.saveToJsonFile(this, fileName);
     }//有参构造函数
 
-    private void addFeature(Object node) {
+    public void addFeature(Object node) {
         // 针对每个节点，保存Feature，目前是String格式，应改为Attributes的向量格式
         // 判断每个节点，如出入度边、节点是否是控制节点等，得到属性向量[0,1,0,2]
         if (node instanceof RangeNode) {//判断具体的节点类型
@@ -158,7 +156,7 @@ public class Graph2Json {
         mFeatureDims.add(mVecGenerator.getVecOfNode(node));
     }
 
-    private void initSuccessors() {
+    public void initSuccessors() {
         Map<Object,Integer> vistedMethodCallex=new HashMap<>();
         Map<Object, Integer> nodeMap = new HashMap<>();//节点索引图
         int nodeIndex = 0;
@@ -188,88 +186,7 @@ public class Graph2Json {
             addFeature(node);//第三个和第四个特征
         }
     }
-    private void initSuccessors1(){
-        List<Integer> temp=new ArrayList<>();
-        Map<Object,Integer> vistedMethodCallex=new HashMap<>();
-        Map<Object, Integer> nodeMap = new HashMap<>();//节点索引图
-        int nodeIndex = 0;
-        //======================添加文件节点作为root节点，用标号0来表示===========================
-//        RangeNode MethodRoot=RangeNode.newInstance(methodDeclaration);
-//        nodeMap.put(methodDeclaration,0);
 
-        //对函数体中的所有节点进行排序。构造键值对，按照键值来表示我们的节点信息。
-        for (Object node : mNetwork.nodes()) {
-            nodeMap.put(node, nodeIndex);
-            nodeIndex++;
-
-            //+++++++++++++++++++++++++++++++++++++++++构建节点调用函数位置关系++++++++++++++++++++++++++++++++++++++++
-            if(!vistedMethodCallex.containsKey(node)&&node instanceof RangeNode){
-                List<MethodCallExpr> mNode=new ArrayList<>();
-                ((RangeNode) node).getmNode().findAll(MethodCallExpr.class).stream().forEach(methodCallExpr -> mNode.add(methodCallExpr));
-                for (MethodCallExpr methodCallExpr:mNode){
-                     int index=nodeMap.get(node);
-                vistedMethodCallex.put(methodCallExpr,index);
-                for(String pfileName:MethodNameList.keySet()){
-                    for( String pfileNameCalled:MethodNameList.get(pfileName)){
-                        if(pfileNameCalled.equals(methodCallExpr.getNameAsString())){
-                            callMethodNameReferTo.put(index,new HashMap<String, String>());
-                            callMethodNameReferTo.get(index).put(pfileName,pfileNameCalled);
-
-                      }
-                    }
-                }
-
-                }
-
-            }
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        }
-        //============================================获取节点的结构信息=================================================
-//        List<Integer> integers=new ArrayList<>();//存储访问过的节点
-//        List<Integer>temp=new ArrayList<>();     //当前节点的后继节点
-
-//        for(integers i){
-//            List<Node>pchildNodes=new ArrayList<>();
-//            if (object instanceof RangeNode){
-//                Node node=((RangeNode) object).getmNode();
-//                if(node instanceof MethodDeclaration){//函数根节点处理
-//                    List<Node> MethodRootChildNodes=node.getChildNodes();
-//                    List<Integer>firstList=new ArrayList<>();
-//                    MethodRootChildNodes.forEach(o -> firstList.add(nodeMap.get(o)));
-//                    mSuccessors.add(firstList);
-//                }
-//                else {//函数根节点的子节点处理方式
-//                    pchildNodes=((RangeNode) object).getNode().getChildNodes();
-//                    List<Integer>NofirstList=new ArrayList<>();
-//                    pchildNodes.forEach(o->NofirstList.add(nodeMap.get(o)));
-//                    mSuccessors.add(NofirstList);
-//
-//                }
-//
-//            }
-//        }
-     //========================================================================================
-        mNodeNumber = nodeIndex;
-        for (Object node : mNetwork.nodes()) {   //针对每一个节点进行构图
-                    temp=(List<Integer>) mNetwork.successors(node).stream()
-                            .map(o -> nodeMap.get(o))
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
-                    Integer pindex=nodeMap.get(node);
-                    temp=temp.stream().filter(t->!(t==pindex)).collect(Collectors.toList());//过滤掉存在自环节点
-
-                    //====================过滤掉可能存在环边关系的边=================================
-//                    temp=temp.stream().filter(t->!integers.contains(t)).collect(Collectors.toList());//过滤掉integers中存在的节点。
-//                    int pIndex=nodeMap.get(node);
-//                    integers.add(pIndex);
-//                    temp.forEach(integer -> integers.add(integer));
-                    //===============================================================================
-                    mSuccessors.add(temp);
-                    //ParseExpression parseExpression=new ParseExpression(Utils.Object2Node(node));
-                    addFeature(node);//图网络添加后两维的特征
-
-        }
-    }
 
 
    public static void addNode2callMethod(Map<Object,Integer> nodeMap){

@@ -3,17 +3,16 @@ package GraphProcess;
 import Neo4j.ExtractJavafile;
 import Neo4j.FunctionClass;
 import Neo4j.Utils;
+import Neo4j.classMethod2Json.outerClassMethod2Json;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.google.common.graph.MutableNetwork;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.github.javaparser.ast.stmt.*;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,18 +81,18 @@ public class Graph2Neo4j {
                 method.forEach(methodDeclaration -> methodCalled.get(pfile.getName()).add(methodDeclaration.getNameAsString()));
                 //methodCalled存储的是《文件名，文件名中包含的函数名》，方便确定查找结点间的调用关系。
             }
-            PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,methodCalled,SaveCat);
+            //PreocessingMethod(ast2Graph,pmethodDeclaration,pfile,methodCalled,SaveCat);
         }
 
     }
 
  public static void ProcessMultiFile(File[] fileList,String SaveCat) {
-        Map<String, List<String>> CalledMethod = new HashMap<>();
+        HashMap<String, HashMap<MethodDeclaration,String>> CalledMethod = new HashMap<>();
        List<HashMap<File, HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>>>> fileMethodDeclarationMap=new ArrayList<>();
       Map<File,AST2Graph> fileAst2GraphMap=new HashMap<>();
       Arrays.stream(fileList).forEach(file -> fileAst2GraphMap.put(file,AST2Graph.newInstance(file.getPath())));
       fileMethodDeclarationMap=Utils.getfileMethodDeclarationMap(fileList);
-     for (File pfile : fileList) {//确定是.java文件
+     for (File pfile : fileList) {//循环遍历文件处理
          AST2Graph ast2Graph = AST2Graph.newInstance(pfile.getPath());
          List<MethodDeclaration> methodDeclarations = new ArrayList<>();
          methodDeclarations = ast2Graph.getMethodDeclarations();
@@ -106,7 +105,7 @@ public class Graph2Neo4j {
          HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>> outclassMethods=functionClass.getOutclassMethods();
          HashMap<ClassOrInterfaceDeclaration,List<MethodDeclaration>>innerclassMethods=functionClass.getInnerclassMethods();
           List<ClassOrInterfaceDeclaration> innerclass=functionClass.getInnerclass();
-         for (MethodDeclaration pmethodDeclaration : methodDeclarations) {
+         for (MethodDeclaration pmethodDeclaration : methodDeclarations) {//循环遍历函数声明处理
             if(Utils.containMethod(pmethodDeclaration,outclassMethods,innerclassMethods)){
                 //目前只处理外部类和内部类中的函数
                 CalledMethod=Utils.getcallMethods(pfile,pmethodDeclaration,fileMethodDeclarationMap);
@@ -114,7 +113,9 @@ public class Graph2Neo4j {
 
             }
             else {
-                //代码中实例化的函数
+                //TODO 代码中实例化的函数,比如在新建接口，需要对接口中的方法进行实现，有可能直接在new花括号中直接实现。这部分会被
+                // 这部分会被当成函数调用
+
 
             }
 
@@ -122,18 +123,17 @@ public class Graph2Neo4j {
      }
  }
 
-   public static void PreocessingMethod(AST2Graph ast2Graph,MethodDeclaration pmethodDeclaration,File pfile,Map<String,List<String>>methodCalled,String Savecat){
-
+   public static void PreocessingMethod(AST2Graph ast2Graph,MethodDeclaration pmethodDeclaration,File pfile, HashMap<String, HashMap<MethodDeclaration,String>> CalledMethod,String Savecat){
+        //methodCalled:<文件名，<类名_in/out_函数名>>
         String fileName=pfile.getName();
         String[] pathArray=pfile.getPath().split("\\\\");
         String version=pathArray[4];//第4个位置为我们的版本号
-        ast2Graph.initNetwork();
-        ast2Graph.constructNetwork(pmethodDeclaration);
-        MutableNetwork<Object,String> mutableNetwork=ast2Graph.getNetwork();
-        Graph2Json graph2Json=Graph2Json.newInstanceForNeo4j(mutableNetwork,pfile,version,pmethodDeclaration.getNameAsString(),methodCalled,pmethodDeclaration);
-        graph2Json.saveToJson(Savecat+fileName+".txt");
+       outerClassMethod2Json outerClassMethod2Json=new outerClassMethod2Json(pfile,version,pmethodDeclaration.getNameAsString(),CalledMethod,pmethodDeclaration);
+       outerClassMethod2Json.newInstanceJson(ast2Graph);
+       outerClassMethod2Json.saveToJson(Savecat+fileName+".txt");
    }
    public  void FileHeader(File file,List<MethodDeclaration> methodDeclarations,String savecat){
+        // TODO json头文件需要进行重写
         String[] array=file.getPath().split("\\\\");
         List<String> methodName=new ArrayList<>();
         methodDeclarations.forEach(methodDeclaration -> methodName.add(methodDeclaration.getNameAsString()));
