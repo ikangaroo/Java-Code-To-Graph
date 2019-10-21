@@ -1,0 +1,1 @@
+{"fileName":"Testcase1.java","Version":"test1","callMethodName":["getName","getSex"]}

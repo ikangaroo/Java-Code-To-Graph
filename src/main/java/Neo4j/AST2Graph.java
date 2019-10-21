@@ -12,7 +12,6 @@ import com.google.common.graph.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AST2Graph extends ParseUtil  {

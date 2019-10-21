@@ -1,0 +1,3 @@
+{"fileName":"StaticCodegenConfig.java","Version":"0.9.22","callMethodName":["setup","whatToCodegen"]}
+{"Version":"0.9.22","MethodName":"StaticCodegenConfig_setup","callMethodNameReferTo":{},"num":3,"succs":[[2,1],[2],[]],"nodeAttribute":["Method Declaration ","Name Expr size ","Simple Name setup "]}
+{"Version":"0.9.22","MethodName":"StaticCodegenConfig_whatToCodegen","callMethodNameReferTo":{},"num":4,"succs":[[2,1],[2,3],[],[]],"nodeAttribute":["Method Declaration ","Array Type 1 ","Simple Name whatToCodegen ","Class Or Interface Type TypeLiteral "]}

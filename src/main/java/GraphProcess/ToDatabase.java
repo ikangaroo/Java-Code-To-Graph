@@ -217,7 +217,7 @@ public class ToDatabase {
             } else {
                 addStringToBuilder(parameter.getNameAsString());
             }
-        } else if (isContain(nodeClassPackage, "Parameter")) {
+        } else if (isContain(nodeClassPackage, "ParameterCompare")) {
             Parameter parameter = (Parameter) node;
             if (parameter.getType().isUnknownType()){
                 addStringToBuilder(SplitString.splitUntilUpperCase("UnknownType"));

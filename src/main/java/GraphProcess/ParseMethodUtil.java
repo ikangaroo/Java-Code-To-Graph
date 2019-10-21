@@ -209,7 +209,7 @@ public class ParseMethodUtil extends ParseUtil {
                     travelNode(parameter.getElementType());
                     travelNode(parameter.getName());
                 }
-            } else if (isContain(nodeClassPackage, "Parameter")) {
+            } else if (isContain(nodeClassPackage, "ParameterCompare")) {
                 Parameter parameter = (Parameter) node;
                 parameter.getAnnotations().forEach(this::travelNode);
                 if (parameter.getType().isUnknownType()){

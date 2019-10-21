@@ -470,7 +470,7 @@ public class AST2Graph extends ParseUtil implements Graph {//实现了图的接�
                     travelNode(parameter.getElementType());
                     travelNode(parameter.getName());
                 }
-            } else if (isContain(nodeClassPackage, "Parameter")) {
+            } else if (isContain(nodeClassPackage, "ParameterCompare")) {
                 Parameter parameter = (Parameter) node;
                 addChildNodeList(parameter, parameter.getAnnotations());
                 parameter.getAnnotations().forEach(this::travelNode);

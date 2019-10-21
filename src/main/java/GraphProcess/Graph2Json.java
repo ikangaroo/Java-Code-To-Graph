@@ -1,7 +1,5 @@
 package GraphProcess;
 import CProcess.StringCapsule;
-import Neo4j.ParseExpression;
-import Neo4j.Utils;
 import Util.SplitString;
 import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.Modifier;
@@ -279,7 +277,7 @@ public class Graph2Json {
             } else {
                 addStringToBuilder(parameter.getNameAsString());
             }
-        } else if (isContain(nodeClassPackage, "Parameter")) {
+        } else if (isContain(nodeClassPackage, "ParameterCompare")) {
             Parameter parameter = (Parameter) node;
             if (parameter.getType().isUnknownType()){
                 addStringToBuilder(SplitString.splitUntilUpperCase("UnknownType"));

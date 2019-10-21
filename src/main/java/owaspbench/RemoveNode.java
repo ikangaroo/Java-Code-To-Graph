@@ -364,7 +364,7 @@ public class RemoveNode extends AST2Graph{
                 }
                 return false;
             }
-            if (isContain(nodeClassPackage, "Parameter")) {
+            if (isContain(nodeClassPackage, "ParameterCompare")) {
                 Parameter parameter = (Parameter) node;
                 if (travelNodeForTaint(parameter.getName())) {
                     boolean all = mAll;
