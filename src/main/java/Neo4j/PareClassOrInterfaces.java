@@ -17,8 +17,8 @@ public class PareClassOrInterfaces {
     @Setter
     private List<String> classNameList = new ArrayList<>();
 
-    public PareClassOrInterfaces(MethodDeclaration me) {//针对函数申明来得到当前函数申明中函数调用所使用的所有类
-        this.methodDeclaration = me;
+    public PareClassOrInterfaces(MethodDeclaration methodDeclaration) {//针对函数申明来得到当前函数申明中函数调用所使用的所有类
+        this.methodDeclaration = methodDeclaration;
 
     }
 
@@ -52,9 +52,17 @@ public class PareClassOrInterfaces {
         return classNameList;
     }
 
+    /** 
+    * @Description: 返回当前类对象的函数声明中所有调用函数，所属的类名 
+    * @Param:  
+    * @return:  
+    * @Author: Kangaroo
+    * @Date: 2019/10/24
+    */ 
     public List<String> findClassList1() {
         //得到当前函数申明中函数调用可能用到的所有类和接口
         List<MethodCallExpr> methodCallExprList = this.methodDeclaration.findAll(MethodCallExpr.class);
+
         for (MethodCallExpr methodCallExpr : methodCallExprList) {
             if (methodCallExpr.getScope().isPresent()) {
                 //型如这种方式：类.函数调用
@@ -64,7 +72,7 @@ public class PareClassOrInterfaces {
                 if (name.startsWith("new")) {
                     classNameList.add(
                             concatName(name.substring("new".length() + 1)));
-                } else if (name.charAt(0) - 0 < 'Z' - 0) {
+                } else if (name.charAt(0) < 'Z') {
                     classNameList.add(concatName(name));
                 } else {
                     // TODO 小写字母，需要追踪变量定义的位置，直接添加本函数中的所有的类和接口，这个变量的类型一定在里面，下面@1解决此处问题
@@ -74,52 +82,54 @@ public class PareClassOrInterfaces {
                 //函数调用前没有任何修饰符
                 //被调用的函数一定是在本类当中，直接通过函数名引用即可，只需要添加本文件类即可。
                 classNameList.add(getClassOfMethod(this.methodDeclaration));//添加本函数所在的类名
-
             }
-
         }
         // TODO @1
-        methodDeclaration.findAll(ClassOrInterfaceType.class).forEach(classOrInterfaceType -> classNameList.add(classOrInterfaceType.getNameAsString()));
+        // 如果参数是某个类的对象，则classNameList同样会将此类名添加进去
+
+        // Data: 2019年10月31日20:39:07
+        // 这里不处理变量的问题，在此函数被调用的后续进行处理
+//        methodDeclaration.findAll(ClassOrInterfaceType.class).forEach(classOrInterfaceType -> classNameList.add(classOrInterfaceType.getNameAsString()));
 
         // 解决有些类带有括号
-        classNameList = removeblaset(classNameList);
+        classNameList = removeSpace(classNameList);
 
         //取出重复元素
-        Set hashset = new HashSet(classNameList);
+        Set hashSet = new HashSet(classNameList);
         classNameList.clear();
-        classNameList.addAll(hashset);
+        classNameList.addAll(hashSet);
 
         return classNameList;
     }
 
     public static String concatName(String classString) {
         String[] s = classString.split("\\.");
-        String classname = "";
+        String className = "";
         for (String name : s) {
-            if (name.charAt(0) - 0 > 'Z' - 0) {
+            if (name.charAt(0) > 'Z') {
                 //小写字母，是函数名
                 continue;
             } else {
                 //大写字母，类名
-                classname = classname.concat(name + ".");
+                className = className.concat(name + ".");
 
             }
         }
         try {
-            classname = classname.substring(0, classname.length() - 1);
+            className = className.substring(0, className.length() - 1);
         } catch (Exception e) {
-            System.out.println("concatName：函数异常");
-            classname = "";
-            return classname;
+//            System.out.println("concatName：函数异常");
+            className = "";
+            return className;
         }
-        return classname;
+        return className;
 
     }
 
-    public List<String> removeblaset(List<String> className) {
-        List<String> removedclassname = new ArrayList<>();
-        className.stream().forEach(name -> removedclassname.add(name.replace("(", "").replace(")", "")));
-        return removedclassname;
+    public List<String> removeSpace(List<String> className) {
+        List<String> removedClassName = new ArrayList<>();
+        className.stream().forEach(name -> removedClassName.add(name.replace("(", "").replace(")", "")));
+        return removedClassName;
     }
 
 

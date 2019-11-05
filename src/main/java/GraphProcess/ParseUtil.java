@@ -3,16 +3,16 @@ package GraphProcess;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,9 @@ public class ParseUtil {
     private List<SimpleName> mSimpleNamesOfClass; //返回class类型的实体名称
     private ArrayList<VariableDeclarator> mFieldVariableDeclarators = new ArrayList<>();//变量声明列表
     private ArrayList<SimpleName> mVariableDeclSimpleNames = new ArrayList<>();
+
+    // 父节点为类或者接口的函数声明
+    private List<MethodDeclaration> methodDeclarations = new ArrayList<>();
 
     public ParseUtil(String srcFilePath) throws FileNotFoundException {
         //构造方法，负责解析java语法树
@@ -47,6 +50,13 @@ public class ParseUtil {
                 .map(ClassOrInterfaceType::getName).collect(Collectors.toList());
         mCompilationUnit.findAll(FieldDeclaration.class).forEach((FieldDeclaration fieldDeclaration) ->
             mFieldVariableDeclarators.addAll(new ArrayList<>(fieldDeclaration.findAll(VariableDeclarator.class))));
+
+        mMethodDeclarations.stream().filter(methodDeclaration -> methodDeclaration.getParentNode().get()
+                instanceof ClassOrInterfaceDeclaration).forEach(methodDeclaration -> methodDeclarations.add(methodDeclaration));
+
+//        mMethodDeclarations.forEach(methodDeclaration -> {if (methodDeclaration.getParentNode().get()
+//                instanceof ClassOrInterfaceDeclaration){methodDeclarations.add(methodDeclaration);}});
+
     }
 
     public MethodDeclaration findMethodDeclarationContains(Node node) {
@@ -156,6 +166,10 @@ public class ParseUtil {
 
     public List<MethodDeclaration> getMethodDeclarations() {
         return mMethodDeclarations;
+    }
+
+    public List<MethodDeclaration> getmethodDeclarations() {
+        return methodDeclarations;
     }
 
     public MethodDeclaration getMethodDeclaration() {

@@ -1,0 +1,10 @@
+{"fileName":"B.java","version":"test3","hasMethodName":["test-B-int-String-float","test-B-String","func-B.C-B","p-B.C.D-List<Integer>"]}
+{"fileName":"B.java","version":"test3","methodName":"test-B-int-String-float","callMethodNameReferTo":{},"num":16,"succrs":[[3,5,2,1,4,6],[2],[],[10,9],[11,12],[13,14],[7],[8,0,15],[9],[],[],[],[],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"test-B-String","callMethodNameReferTo":{},"num":10,"succrs":[[1,4,3,2],[2],[],[7,8],[5],[0,6,9],[7],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"func-B.C-B","callMethodNameReferTo":{},"num":15,"succrs":[[3,1,2,4],[2],[],[6,5],[7],[],[],[8],[10,11,9],[12,13],[],[14],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"p-B.C.D-List<Integer>","callMethodNameReferTo":{},"num":17,"succrs":[[4,1,3,2],[2],[],[6,5],[9],[7,8],[],[],[],[10],[11,13,12],[15,14],[],[16],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","hasMethodName":["test-B-int-String-float","test-B-String","func-B.C-B","p-B.C.D-List<Integer>"]}
+{"fileName":"B.java","version":"test3","methodName":"test-B-int-String-float","callMethodNameReferTo":{},"num":16,"succrs":[[3,5,2,1,4,6],[2],[],[10,9],[11,12],[13,14],[7],[8,0,15],[9],[],[],[],[],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"test-B-String","callMethodNameReferTo":{},"num":10,"succrs":[[1,4,3,2],[2],[],[7,8],[5],[0,6,9],[7],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"func-B.C-B","callMethodNameReferTo":{},"num":15,"succrs":[[3,1,2,4],[2],[],[6,5],[7],[],[],[8],[10,11,9],[12,13],[],[14],[],[],[]],"attribute":{}}
+{"fileName":"B.java","version":"test3","methodName":"p-B.C.D-List<Integer>","callMethodNameReferTo":{},"num":17,"succrs":[[4,1,3,2],[2],[],[6,5],[9],[7,8],[],[],[],[10],[11,13,12],[15,14],[],[16],[],[],[]],"attribute":{}}

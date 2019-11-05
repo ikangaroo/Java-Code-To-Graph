@@ -1,0 +1,3 @@
+{"fileName":"C.java","version":"0.9","hasMethodName":["s1-C-","s3-C-"]}
+{"fileName":"C.java","version":"0.9","methodName":"s1-C-","callMethodNameReferTo":{},"num":3,"succs":[[2,1],[2],[]],"attribute":["Method Declaration ","Void Type ","Simple Name s1 "]}
+{"fileName":"C.java","version":"0.9","methodName":"s3-C-","callMethodNameReferTo":{},"num":3,"succs":[[1,2],[2],[]],"attribute":["Method Declaration ","Void Type ","Simple Name s3 "]}

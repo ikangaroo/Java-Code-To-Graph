@@ -11,6 +11,7 @@ public class ExtractJavafile {
     private List<File> fileList=new ArrayList<>();
     public ExtractJavafile(String URL){
     }
+
     public void getFileList(File dir){
         if (!dir.exists()||!dir.isDirectory()){
             //不是目录或者目录不存在
@@ -38,10 +39,17 @@ public class ExtractJavafile {
     }
 
     public static void main(String[] args) {
-         String url="H:\\CodeGraph\\TRGeneration-master";
+         String cat = "../CodeGraph/Project/Sourcedata/0.923/asd/c";
+
+         String url="../CodeGraph/Project/Sourcedata/0.9.23/";
          File dir=new File(url);
          ExtractJavafile extractJavafile=new ExtractJavafile(url);
          extractJavafile.getFileList(dir);
-         File []fileList=extractJavafile.getFile();
+         File[] fileList=extractJavafile.getFile();
+//         System.out.println(url.lastIndexOf("/") + " " + url.length());
+//         System.out.println(url.substring(url.indexOf(cat) + cat.length()));
+
+         System.out.println(fileList[0].getPath());
+         System.out.println(fileList[0].getName());
     }
 }

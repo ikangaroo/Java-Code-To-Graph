@@ -25,46 +25,46 @@ import java.util.stream.Collectors;
 
 public class Graph2Json {
     private MutableNetwork mNetwork;
-    @Expose
-    @SerializedName(value = "fileName")
+//    @Expose
+//    @SerializedName(value = "fileName")
     @Setter
     @Getter
     private String fileName;
-    @Expose
-    @SerializedName(value = "Version")
+//    @Expose
+//    @SerializedName(value = "Version")
     @Setter
     @Getter
     private String Version;
-    @Expose
-    @SerializedName(value = "MethodName")
+//    @Expose
+//    @SerializedName(value = "MethodName")
     @Setter
     @Getter
     private String MethodName;
-    @Expose
-    @SerializedName(value = "callMethodNameReferTo")
+//    @Expose
+//    @SerializedName(value = "callMethodNameReferTo")
     @Setter
     @Getter
     private HashMap<Integer,Map<String,String>>callMethodNameReferTo=new HashMap<>();//<节点ID，<访问的函数,函数所在的文件>>
-    @Expose
-    @SerializedName(value = "n_num")
+//    @Expose
+//    @SerializedName(value = "n_num")
     @Setter
     @Getter
     private int mNodeNumber;
-    @Expose
-    @SerializedName(value = "succs")
+//    @Expose
+//    @SerializedName(value = "succs")
     @Setter
     @Getter
     private List<List<Integer>> mSuccessors = new ArrayList<>();
-    @Expose
-    @SerializedName(value = "featureString")//字符串特征
+//    @Expose
+//    @SerializedName(value = "featureString")//字符串特征
     @Setter
     @Getter
     private List<String> mFeatures = new ArrayList<>();
     //@Expose
     //@SerializedName(value = "Attribute")
     //private List<ParseExpression> attribute=new ArrayList<>();
-   @Expose(serialize = false,deserialize = false)
-   @SerializedName(value = "featureDims")
+//   @Expose(serialize = false,deserialize = false)
+//   @SerializedName(value = "featureDims")
     private List<List<Integer>> mFeatureDims = new ArrayList<>();//方法调用矩阵
     private StringBuilder mStringBuilder = new StringBuilder();
     private VecGenerator mVecGenerator;
@@ -435,18 +435,28 @@ public class Graph2Json {
             }
         }else if (isContain(nodeClassPackage, "IntegerLiteralExpr")) {
             IntegerLiteralExpr integerLiteralExpr = (IntegerLiteralExpr) node;
-            if (integerLiteralExpr.asInt() == 0) {
-                addStringToBuilder("Zero ");
-            } else {
+            try{
+                if (integerLiteralExpr.asInt() == 0) {
+                    addStringToBuilder("Zero ");
+                } else {
+                    addStringToBuilder("Note Zero ");
+                }
+            } catch (Exception e){
                 addStringToBuilder("Note Zero ");
             }
+
         }else if (isContain(nodeClassPackage, "LongLiteralExpr")) {
             LongLiteralExpr longLiteralExpr = (LongLiteralExpr) node;
-            if (longLiteralExpr.asLong() == 0l) {
-                addStringToBuilder("Zero ");
-            } else {
+            try{
+                if (longLiteralExpr.asLong() == 0l) {
+                    addStringToBuilder("Zero ");
+                } else {
+                    addStringToBuilder("Note Zero ");
+                }
+            } catch (Exception e){
                 addStringToBuilder("Note Zero ");
             }
+
         }else if (isContain(nodeClassPackage, "NullLiteralExpr")) {
         }
     }

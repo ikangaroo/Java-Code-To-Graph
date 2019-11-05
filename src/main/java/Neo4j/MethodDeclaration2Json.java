@@ -110,14 +110,16 @@ public class MethodDeclaration2Json extends Graph2Json {
                                 //得到所在的类名
                                 String calssName = CalledMethod.get(pfileName).get(methodDeclaration);
                                 //<结点，文件名_类名_outer_函数名>
-                                callMethodNameReferTo.put(index, pfileName.concat("_").concat(calssName).concat("_").concat(methodDeclaration.getNameAsString()));
-
+                                String res = pfileName.concat("-").concat(methodDeclaration.getNameAsString()).concat(calssName).concat(new GraphParse().getMethodParameter(methodDeclaration));
+//                                callMethodNameReferTo.put(index, pfileName.concat("_").concat(calssName).concat("_").concat(methodDeclaration.getNameAsString()));
+                                callMethodNameReferTo.put(index, res);
                             }
                         }
                     }
                 }
             }
         }
+
         num = nodeIndex;
         for (Object node : mutableNetwork.nodes()) {   //针对每一个节点进行构图
             temp = (List<Integer>) mutableNetwork.successors(node).stream()

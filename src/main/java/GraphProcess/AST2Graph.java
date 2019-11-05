@@ -1343,22 +1343,34 @@ public class AST2Graph extends ParseUtil implements Graph {//实现了图的接�
             }
         } else if (isContain(nodeClassPackage, "IntegerLiteralExpr")) {
             IntegerLiteralExpr integerLiteralExpr = (IntegerLiteralExpr) node;
-            if (integerLiteralExpr.asInt() == 0) {
-                addChildTokenForObjectV(node, "Zero " + nodeClass);
-                stringPrint("Zero " + nodeClass);
-            } else {
+            try {
+                // 如果asInt时数据超过 范围，会抛出异常
+                if(integerLiteralExpr.asInt() == 0){
+                    addChildTokenForObjectV(node, "Zero " + nodeClass);
+                    stringPrint("Zero " + nodeClass);
+                } else{
+                    addChildTokenForObjectV(node, nodeClass);
+                    stringPrint(nodeClass);
+                }
+            }catch (Exception e){
                 addChildTokenForObjectV(node, nodeClass);
                 stringPrint(nodeClass);
             }
         } else if (isContain(nodeClassPackage, "LongLiteralExpr")) {
             LongLiteralExpr longLiteralExpr = (LongLiteralExpr) node;
-            if (longLiteralExpr.asLong() == 0L) {
-                addChildTokenForObjectV(node, "Zero " + nodeClass);
-                stringPrint("Zero " + nodeClass);
-            } else {
+            try{
+                if (longLiteralExpr.asLong() == 0L) {
+                    addChildTokenForObjectV(node, "Zero " + nodeClass);
+                    stringPrint("Zero " + nodeClass);
+                } else {
+                    addChildTokenForObjectV(node, nodeClass);
+                    stringPrint(nodeClass);
+                }
+            } catch (Exception e){
                 addChildTokenForObjectV(node, nodeClass);
                 stringPrint(nodeClass);
             }
+
         } else if (isContain(nodeClassPackage, "NullLiteralExpr")) {
             addChildTokenForObjectV(node, nodeClass);
             stringPrint(nodeClass);

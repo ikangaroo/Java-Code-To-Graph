@@ -47,15 +47,17 @@ public class FunctionParse {
     public FunctionParse(File pfile) {
         this.ast2Graph = AST2Graph.newInstance(pfile.getPath());
         this.outclassName = pfile.getName().split("\\.")[0];
-
-
+//        System.out.println("outclassName is: " + this.outclassName);
     }
 
     public void PareMethod() {
 
-        List<MethodDeclaration> allmethodDeclaration = this.ast2Graph.getMethodDeclarations();
-        List<ClassOrInterfaceType>classOrInterfaceTypeList=this.ast2Graph.getCompilationUnit().findAll(ClassOrInterfaceType.class);
+//        List<MethodDeclaration> allmethodDeclaration = this.ast2Graph.getMethodDeclarations();
+        // 此函数过滤了new 类 { 函数 }的情况
+        List<MethodDeclaration> allMethodDeclaration = this.ast2Graph.getmethodDeclarations();
+//        List<ClassOrInterfaceType>classOrInterfaceTypeList=this.ast2Graph.getCompilationUnit().findAll(ClassOrInterfaceType.class);
         List<ClassOrInterfaceDeclaration> classOrInterfaceDeclarations = this.ast2Graph.getCompilationUnit().findAll(ClassOrInterfaceDeclaration.class);
+
         for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration : classOrInterfaceDeclarations) {
             if (classOrInterfaceDeclaration.getNameAsString().equals(outclassName)) {
                 //确定外部类只有一个
@@ -66,7 +68,7 @@ public class FunctionParse {
             }
         }
         //把所有的函数声明进行归类
-        for (MethodDeclaration methodDeclaration : allmethodDeclaration) {
+        for (MethodDeclaration methodDeclaration : allMethodDeclaration) {
             if (methodDeclaration.getParentNode().get() instanceof ClassOrInterfaceDeclaration) {
                 if (((ClassOrInterfaceDeclaration) methodDeclaration.getParentNode().get()).getNameAsString().equals(outclassName)) {
                     //函数声明在外部类中
@@ -82,6 +84,7 @@ public class FunctionParse {
                     innerclassMethods.get(methodDeclaration.getParentNode().get()).add(methodDeclaration);
                 }
             } else {
+                System.out.println("Case 3");
                 // TODO 这种情况可以认为也是内部类，直接new的后面的类型作为我们函数重写的外部类。
                 //直接父节点不是类的情况
                 //函数声明可能是在新建接口过程中，重写了接口中的方法，这部分先不处理

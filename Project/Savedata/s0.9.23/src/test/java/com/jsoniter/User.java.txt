@@ -1,0 +1,1 @@
+{"fileName":"src/test/java/com/jsoniter/User.java","version":"0.9.23","hasMethodName":[]}

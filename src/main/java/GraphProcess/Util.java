@@ -52,6 +52,7 @@ public class Util {
 
     public static void saveToJsonFile(Object object, String fileName) {
         Gson gson = getGsonInstance();
+//        String jsonString = gson.toJson(object).replace("\\","");//去掉转移字符
         String jsonString = gson.toJson(object).replace("\\","");//去掉转移字符
         //saveToFile(jsonString, fileName);
 
@@ -76,6 +77,11 @@ public class Util {
         }
     }
     public static void saveToFile1(String text,String fileName){
+        File file = new File(fileName);
+        if (!file.exists()){
+            file.getParentFile().mkdirs();
+        }
+
         BufferedWriter out=null;
         try {
             out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName,true)));
