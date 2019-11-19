@@ -1,1 +1,0 @@
-{"fileName":"src/test/java/com/jsoniter/suite/ExtraTests.java","version":"0.9.23","hasMethodName":[]}

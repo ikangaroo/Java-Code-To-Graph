@@ -1,4 +1,5 @@
 package Neo4j;
+
 import GraphProcess.Util;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -11,31 +12,31 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
 
 public class GraphParse {
 
     private String fileName;
     private String version;
-    // 函数名-类名.类名-参数类型1-参数类型2
+    /** 函数名-类名.类名-参数类型1-参数类型2 **/
     private List<String> callMethodName = new ArrayList<>();
     private String methodName;
 
     public GraphParse() {
-        //无参构造函数；
+        /* 无参构造函数； */
     }
 
     public static void main(String[] args) {
         System.out.println("开始解析！");
-        String Version = "0.9";
-        String SVersion = "s0.9-1";
-        String SourceCat = "../CodeGraph/Project/Sourcedata/" + Version + "/";
-        String SaveCat = "../CodeGraph/Project/Savedata/" + SVersion + "/";
-        File dir = new File(SourceCat);
-        ExtractJavafile javafile = new ExtractJavafile(SourceCat);
-        javafile.getFileList(dir);
-        File[] fileList = javafile.getFile();
-        ProcessMultiFile(fileList, SaveCat);//处理多个文件，包含有多个类或者接
-
+        String Version = "0.9.22";
+        String SourcePath = "Project\\Sourcedata\\a\\b\\" + Version + "\\";
+        String SavePath = "Project\\Savadata\\" + Version + "\\";
+        File dir = new File(SourcePath);
+        ExtractJavaFile javaFile = new ExtractJavaFile();
+        javaFile.getFileList(dir);
+        File[] fileList = javaFile.getFile();
+        //处理多个文件，包含有多个类或者接
+        ProcessMultiFile(fileList, SavePath);
     }
 
     public static void ProcessMultiFile(File[] fileList, String SaveCat) {
@@ -55,25 +56,26 @@ public class GraphParse {
                 Utils.getfileMethodDeclarationMap(fileList);
 
 
-        for (File pfile : fileList) {//循环遍历文件处理
-            GraphProcess.AST2Graph ast2Graph = GraphProcess.AST2Graph.newInstance(pfile.getPath());
+        //循环遍历文件处理
+        for (File file : fileList) {
+            GraphProcess.AST2Graph ast2Graph = GraphProcess.AST2Graph.newInstance(file.getPath());
             // 不包含 new 类{ 函数 }的情况
             List<MethodDeclaration> methodDeclarations = ast2Graph.getmethodDeclarations();
 
-
-//            写入当前文件的头文件信息
-            new GraphParse().headOfJson(pfile, methodDeclarations, SaveCat + Utils.getFileNameWithPath(pfile) + ".txt");
+            // 写入当前文件的头文件信息
+            new GraphParse().headOfJson(file, methodDeclarations, SaveCat + Utils.getFileNameWithPath(file) + ".txt");
             //获得当前文件的外部类、内部类函数
-            HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>> outclassMethods =fileMethodDeclarationMap.get(1).get(pfile);
-            HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>> innerclassMethods = fileMethodDeclarationMap.get(0).get(pfile);
+            HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>> outclassMethods =fileMethodDeclarationMap.get(1).get(file);
+            HashMap<ClassOrInterfaceDeclaration, List<MethodDeclaration>> innerclassMethods = fileMethodDeclarationMap.get(0).get(file);
 
-            for (MethodDeclaration methodDeclaration : methodDeclarations) {//循环遍历函数声明处理
+            //循环遍历函数声明处理
+            for (MethodDeclaration methodDeclaration : methodDeclarations) {
                 //  函数申明在外部类或者内部类中
                 if (Utils.containMethod(methodDeclaration, outclassMethods, innerclassMethods)) {
                     //目前只处理外部类和内部类中的函数
                     callMethod = Utils.getcallMethods(methodDeclaration, fileMethodDeclarationMap);
                     try {
-                        new GraphParse().methodOfJson(pfile, methodDeclaration, callMethod,SaveCat + Utils.getFileNameWithPath(pfile) + ".txt");
+                        new GraphParse().methodOfJson(file, methodDeclaration, callMethod,SaveCat + Utils.getFileNameWithPath(file) + ".txt");
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                         System.out.println(methodDeclaration.getNameAsString() + "\t:内外部类函数构造异常");
@@ -114,29 +116,6 @@ public class GraphParse {
         }
     }
 
-//    public static void PreocessingMethod(AST2Graph ast2Graph, MethodDeclaration pmethodDeclaration, String MethodName,
-//    File pfile, HashMap<String, HashMap<MethodDeclaration, String>> CalledMethod, String Savecat) {
-//        //methodCalled:<文件名，<类名_in/out_函数名>>
-//        String fileName = pfile.getName();
-//        String[] pathArray = pfile.getPath().split(File.separator);
-//        String version = pathArray[4];//第4个位置为我们的版本号
-//        MethodDeclaration2Json MethodDeclaration2Json = new MethodDeclaration2Json(pfile, version, pmethodDeclaration.getNameAsString(), CalledMethod, pmethodDeclaration);
-//        MethodDeclaration2Json.setMethodName(MethodName);
-//        MethodDeclaration2Json.newInstanceJson(ast2Graph);
-//        MethodDeclaration2Json.saveToJson(Savecat + fileName + ".txt");
-//    }
-
-//    public void FileHeader(File file, List<MethodDeclaration> methodDeclarations, String savecat) {
-//        // TODO json头文件需要进行重写
-//        String[] array = file.getPath().split("\\\\");
-//        List<String> methodName = new ArrayList<>();
-//        methodDeclarations.forEach(methodDeclaration -> methodName.add(methodDeclaration.getNameAsString()));
-//        this.version = array[4];//拆分的第4个位置为版本号
-//        this.fileName = file.getName();
-//        this.callMethodName = methodName;
-//        Util.saveToJsonFile(this, savecat + fileName + ".txt");
-//    }
-
     /**
     * @Description: 将文件的基本信息写入Json文件中（第一行）
     * @Param:
@@ -145,8 +124,7 @@ public class GraphParse {
     * @Date: 2019/10/22
     */
     public void headOfJson(File file, List<MethodDeclaration> methodDeclarations, String saveFilePath){
-        String[] array = file.getPath().split(File.separator);
-//        this.fileName = file.getName();
+        String[] array = file.getPath().split(Matcher.quoteReplacement(File.separator));
         this.fileName = Utils.getFileNameWithPath(file);
         this.version = array[4];
         // 函数名-类名.类名-参数类型-参数类型
@@ -168,9 +146,8 @@ public class GraphParse {
      * @Date: 2019/10/18
      */
     public void methodOfJson(File file, MethodDeclaration methodDeclaration, HashMap<String, HashMap<MethodDeclaration, String>> CalledMethod, String savaFilePath){
-//        this.fileName = file.getName();
         this.fileName = Utils.getFileNameWithPath(file);
-        this.version = file.getParent().split(File.separator)[4];
+        this.version = file.getParent().split(Matcher.quoteReplacement(File.separator))[4];
         this.methodName = methodDeclaration.getNameAsString() + "-" + getClassNameOfMethod(methodDeclaration) + "-" + getMethodParameter(methodDeclaration);
 
         DataToJson.Body body = new DataToJson.Body(file, this.fileName, this.version, this.methodName, methodDeclaration, CalledMethod);

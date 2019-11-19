@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Node;
 import java.util.Comparator;
 
 class NodeComparator implements Comparator<Node> {
+    @Override
     public int compare(Node faultResult1, Node faultResult2) {
         int cr = 0;
         //先按line排升序

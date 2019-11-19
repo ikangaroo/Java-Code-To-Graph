@@ -14,6 +14,7 @@ import lombok.Setter;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -454,9 +455,10 @@ public class Utils {
     * @Date: 2019/10/29
     */
     public static String getFileNameWithPath(File file){
-        String[] array = file.getPath().split(File.separator);
+        String[] array = file.getPath().split(Matcher.quoteReplacement(File.separator));
         String version = array[4];
         String res = file.getPath();
+
         return res.substring(res.indexOf(version) + version.length() + 1);
     }
 

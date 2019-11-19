@@ -1,0 +1,1 @@
+{"fileName":"srcmainjavacomjsoniterannotationJsonMissingProperties.java","version":"0.9.22","hasMethodName":[]}

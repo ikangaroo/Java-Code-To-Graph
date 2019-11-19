@@ -1,0 +1,1 @@
+{"fileName":"srcmainjavacomjsoniterannotationJsonIgnore.java","version":"0.9.22","hasMethodName":[]}

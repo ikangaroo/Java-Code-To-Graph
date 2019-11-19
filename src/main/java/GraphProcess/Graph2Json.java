@@ -1,5 +1,5 @@
 package GraphProcess;
-import CProcess.StringCapsule;
+//import CProcess.StringCapsule;
 import Util.SplitString;
 import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.Modifier;
@@ -143,8 +143,8 @@ public class Graph2Json {
                 mFeatures.add(SplitString.splitUntilUpperCase(cls));
             }
 //            mFeatures.add(travelNode(((RangeNode) node).getNode()));
-        } else if (node instanceof StringCapsule) {
-            mFeatures.add(((StringCapsule) node).getString());
+//        } else if (node instanceof StringCapsule) {
+//            mFeatures.add(((StringCapsule) node).getString());
         } else if (node instanceof String) {
             mFeatures.add(node.toString());
         } else {
@@ -448,7 +448,7 @@ public class Graph2Json {
         }else if (isContain(nodeClassPackage, "LongLiteralExpr")) {
             LongLiteralExpr longLiteralExpr = (LongLiteralExpr) node;
             try{
-                if (longLiteralExpr.asLong() == 0l) {
+                if (longLiteralExpr.asLong() == 0L) {
                     addStringToBuilder("Zero ");
                 } else {
                     addStringToBuilder("Note Zero ");

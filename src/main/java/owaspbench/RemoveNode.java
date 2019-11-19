@@ -56,6 +56,7 @@ public class RemoveNode extends AST2Graph{
         }
     }
 
+    @Override
     public void initNetwork() {
         super.initNetworkWithoutRangeNode();
         mAll = false;

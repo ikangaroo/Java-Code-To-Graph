@@ -1,3 +1,0 @@
-{"fileName":"Testcase1_1.java","Version":"test1","callMethodName":["getName","getSex"]}
-{"Version":"test1","MethodName":"Testcase1_1_getName","callMethodNameReferTo":{},"num":4,"succs":[[1,3,2],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getName "]}
-{"Version":"test1","MethodName":"Testcase1_1_getSex","callMethodNameReferTo":{},"num":4,"succs":[[1,3,2],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getSex "]}

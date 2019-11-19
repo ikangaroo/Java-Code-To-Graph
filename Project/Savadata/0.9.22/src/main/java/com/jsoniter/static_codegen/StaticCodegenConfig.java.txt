@@ -1,0 +1,3 @@
+{"fileName":"srcmainjavacomjsoniterstatic_codegenStaticCodegenConfig.java","version":"0.9.22","hasMethodName":["setup-StaticCodegenConfig-","whatToCodegen-StaticCodegenConfig-"]}
+{"fileName":"srcmainjavacomjsoniterstatic_codegenStaticCodegenConfig.java","version":"0.9.22","methodName":"setup-StaticCodegenConfig-","callMethodNameReferTo":{},"num":3,"succs":[[2,1],[2],[]],"attribute":["Method Declaration ","Name Expr size ","Simple Name setup "]}
+{"fileName":"srcmainjavacomjsoniterstatic_codegenStaticCodegenConfig.java","version":"0.9.22","methodName":"whatToCodegen-StaticCodegenConfig-","callMethodNameReferTo":{},"num":4,"succs":[[1,2],[3,2],[],[]],"attribute":["Method Declaration ","Array Type 1 ","Simple Name whatToCodegen ","Class Or Interface Type TypeLiteral "]}

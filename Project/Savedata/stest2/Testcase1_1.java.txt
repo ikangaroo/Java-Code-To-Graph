@@ -1,9 +1,0 @@
-{"fileName":"Testcase1_1.java","Version":"test2","callMethodName":["getName","getSex"]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,3,1],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getName "]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,1,3],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getSex "]}
-{"fileName":"Testcase1_1.java","Version":"test2","callMethodName":["getName","getSex"]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,3,1],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getName "]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,1,3],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getSex "]}
-{"fileName":"Testcase1_1.java","Version":"test2","callMethodName":["getName","getSex"]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,3,1],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getName "]}
-{"Version":"test2","callMethodNameReferTo":{},"num":4,"succs":[[2,1,3],[],[3],[]],"nodeAttribute":["Method Declaration ","PUBLIC","Class Or Interface Type String ","Simple Name getSex "]}
